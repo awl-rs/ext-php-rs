@@ -5,6 +5,7 @@ mod ext;
 
 use anyhow::{bail, Context, Result as AResult};
 use cargo_metadata::{camino::Utf8PathBuf, Target};
+use clap::arg;
 use clap::Parser;
 use dialoguer::{Confirm, Select};
 
