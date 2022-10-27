@@ -31,6 +31,16 @@ macro_rules! stub_symbols {
         pub static mut $s: *mut () = ::std::ptr::null_mut();
     };
 }
+// Mock macro for the `allowed_bindings.rs` script.
+#[cfg(not(windows))]
+macro_rules! bind {
+    ($($s: ident),*) => {
+        stub_symbols!($($s),*);
+    }
+}
+
+#[cfg(not(windows))]
+include!("../allowed_bindings.rs");
 
 /// Result type returned from the [`run`] function.
 pub type CrateResult = AResult<()>;
