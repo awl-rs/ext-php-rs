@@ -54,7 +54,7 @@ pub fn run() -> CrateResult {
     author = "David Cole <david.cole1340@gmail.com>",
     version = env!("CARGO_PKG_VERSION")
 )]
-enum Args {
+pub enum Args {
     /// Installs the extension in the current PHP installation.
     ///
     /// This copies the extension to the PHP installation and adds the
@@ -86,7 +86,7 @@ enum Args {
 }
 
 #[derive(Parser)]
-struct Install {
+pub struct Install {
     /// Changes the path that the extension is copied to. This will not
     /// activate the extension unless `ini_path` is also passed.
     #[arg(long)]
@@ -111,7 +111,7 @@ struct Install {
 }
 
 #[derive(Parser)]
-struct Remove {
+pub struct Remove {
     /// Changes the path that the extension will be removed from. This will not
     /// remove the extension from a configuration file unless `ini_path` is also
     /// passed.
@@ -130,26 +130,26 @@ struct Remove {
 }
 
 #[cfg(not(windows))]
-#[derive(Parser)]
-struct Stubs {
+#[derive(Parser, Default)]
+pub struct Stubs {
     /// Path to extension to generate stubs for. Defaults for searching the
     /// directory the executable is located in.
-    ext: Option<PathBuf>,
+    pub ext: Option<PathBuf>,
     /// Path used to store generated stub file. Defaults to writing to
     /// `<ext-name>.stubs.php` in the current directory.
     #[arg(short, long)]
-    out: Option<PathBuf>,
+    pub out: Option<PathBuf>,
     /// Print stubs to stdout rather than write to file. Cannot be used with
     /// `out`.
     #[arg(long, conflicts_with = "out")]
-    stdout: bool,
+    pub stdout: bool,
     /// Path to the Cargo manifest of the extension. Defaults to the manifest in
     /// the directory the command is called.
     ///
     /// This cannot be provided alongside the `ext` option, as that option
     /// provides a direct path to the extension shared library.
     #[arg(long, conflicts_with = "ext")]
-    manifest: Option<PathBuf>,
+    pub manifest: Option<PathBuf>,
 }
 
 impl Args {
