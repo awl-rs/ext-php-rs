@@ -6,7 +6,7 @@ pub mod function;
 mod helpers;
 mod impl_;
 mod method;
-mod module;
+pub mod module;
 mod startup_function;
 mod syn_ext;
 mod zval;
