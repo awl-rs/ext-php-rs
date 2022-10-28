@@ -1,5 +1,5 @@
 [package]
-name = "ext-php-rs-derive"
+name = "macros-impl"
 description = "Derive macros for ext-php-rs."
 repository = "https://github.com/davidcole1340/ext-php-rs"
 homepage = "https://github.com/davidcole1340/ext-php-rs"
