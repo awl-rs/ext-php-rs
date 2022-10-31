@@ -1,5 +1,5 @@
 pub mod class;
-mod constant;
+pub mod constant;
 mod extern_;
 mod fastcall;
 pub mod function;
