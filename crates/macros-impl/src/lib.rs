@@ -1,10 +1,10 @@
-mod class;
+pub mod class;
 mod constant;
 mod extern_;
 mod fastcall;
 pub mod function;
 mod helpers;
-mod impl_;
+pub mod impl_;
 mod method;
 pub mod module;
 mod startup_function;
