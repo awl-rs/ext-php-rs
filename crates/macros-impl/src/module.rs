@@ -12,6 +12,12 @@ use crate::{
 };
 
 pub fn parser(input: ItemFn) -> Result<TokenStream> {
+    parser_with_opt_namespace(input, None)
+}
+pub fn parser_with_namespace(input: ItemFn, namespace: Ident) -> Result<TokenStream> {
+    parser_with_opt_namespace(input, Some(namespace))
+}
+pub fn parser_with_opt_namespace(input: ItemFn, namespace: Option<Ident>) -> Result<TokenStream> {
     let ItemFn { sig, block, .. } = input;
     let Signature { output, inputs, .. } = sig;
     let stmts = &block.stmts;
@@ -71,6 +77,7 @@ pub fn parser(input: ItemFn) -> Result<TokenStream> {
             fn internal(#inputs) #output {
                 #(#stmts)*
             }
+            use #namespace::*;
 
             let mut builder = ::awl::ms::php::builders::ModuleBuilder::new(
                 env!("CARGO_PKG_NAME"),
