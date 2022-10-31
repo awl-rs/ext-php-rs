@@ -40,7 +40,7 @@ pub fn parser_with_opt_namespace(input: ItemFn, namespace: Option<Path>) -> Resu
             fn php_module_startup() {}
         })
         .map_err(|_| anyhow!("Unable to generate PHP module startup function."))?;
-        let startup = startup_function::parser(parsed)?;
+        let startup = startup_function::parser_with_opt_namespace(parsed, namespace.clone())?;
 
         state = STATE.lock();
         Some(startup)

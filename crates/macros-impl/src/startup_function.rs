@@ -3,11 +3,14 @@ use std::collections::HashMap;
 use anyhow::{anyhow, Result};
 use proc_macro2::{Ident, Span, TokenStream};
 use quote::quote;
-use syn::{Expr, ItemFn, Signature};
+use syn::{Expr, ItemFn, Path, Signature};
 
 use crate::{class::Class, constant::Constant, STATE};
 
 pub fn parser(input: ItemFn) -> Result<TokenStream> {
+    parser_with_opt_namespace(input, None)
+}
+pub fn parser_with_opt_namespace(input: ItemFn, namespace: Option<Path>) -> Result<TokenStream> {
     let ItemFn { sig, block, .. } = input;
     let Signature { ident, .. } = sig;
     let stmts = &block.stmts;
@@ -23,6 +26,7 @@ pub fn parser(input: ItemFn) -> Result<TokenStream> {
         pub extern "C" fn #ident(ty: i32, module_number: i32) -> i32 {
             use ::awl::ms::php::constant::IntoConst;
             use ::awl::ms::php::flags::PropertyFlags;
+            use #namespace::*;
 
             fn internal() {
                 #(#stmts)*
