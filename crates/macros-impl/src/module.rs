@@ -3,7 +3,7 @@ use std::sync::MutexGuard;
 use anyhow::{anyhow, bail, Result};
 use proc_macro2::{Ident, Span, TokenStream};
 use quote::quote;
-use syn::{ItemFn, Signature, Type};
+use syn::{ItemFn, Path, Signature, Type};
 
 use crate::{
     class::{Class, Property},
@@ -14,10 +14,10 @@ use crate::{
 pub fn parser(input: ItemFn) -> Result<TokenStream> {
     parser_with_opt_namespace(input, None)
 }
-pub fn parser_with_namespace(input: ItemFn, namespace: Ident) -> Result<TokenStream> {
+pub fn parser_with_namespace(input: ItemFn, namespace: Path) -> Result<TokenStream> {
     parser_with_opt_namespace(input, Some(namespace))
 }
-pub fn parser_with_opt_namespace(input: ItemFn, namespace: Option<Ident>) -> Result<TokenStream> {
+pub fn parser_with_opt_namespace(input: ItemFn, namespace: Option<Path>) -> Result<TokenStream> {
     let ItemFn { sig, block, .. } = input;
     let Signature { output, inputs, .. } = sig;
     let stmts = &block.stmts;
