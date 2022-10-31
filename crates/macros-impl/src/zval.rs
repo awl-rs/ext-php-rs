@@ -43,13 +43,13 @@ pub fn parser(input: DeriveInput) -> Result<TokenStream> {
                 let ident = &ty.ident;
                 into_where_clause.predicates.push(
                     syn::parse2(quote! {
-                        #ident: ::ext_php_rs::convert::IntoZval
+                        #ident: ::awl::ms::php::convert::IntoZval
                     })
                     .expect("couldn't parse where predicate"),
                 );
                 from_where_clause.predicates.push(
                     syn::parse2(quote! {
-                        #ident: ::ext_php_rs::convert::FromZval<'_zval>
+                        #ident: ::awl::ms::php::convert::FromZval<'_zval>
                     })
                     .expect("couldn't parse where predicate"),
                 );
@@ -127,43 +127,43 @@ fn parse_struct(
         .collect::<Result<Vec<_>>>()?;
 
     Ok(quote! {
-        impl #into_impl_generics ::ext_php_rs::convert::IntoZendObject for #ident #ty_generics #into_where_clause {
-            fn into_zend_object(self) -> ::ext_php_rs::error::Result<
-                ::ext_php_rs::boxed::ZBox<
-                    ::ext_php_rs::types::ZendObject
+        impl #into_impl_generics ::awl::ms::php::convert::IntoZendObject for #ident #ty_generics #into_where_clause {
+            fn into_zend_object(self) -> ::awl::ms::php::error::Result<
+                ::awl::ms::php::boxed::ZBox<
+                    ::awl::ms::php::types::ZendObject
                 >
             > {
-                use ::ext_php_rs::convert::IntoZval;
+                use ::awl::ms::php::convert::IntoZval;
 
-                let mut obj = ::ext_php_rs::types::ZendObject::new_stdclass();
+                let mut obj = ::awl::ms::php::types::ZendObject::new_stdclass();
                 #(#into_fields)*
-                ::ext_php_rs::error::Result::Ok(obj)
+                ::awl::ms::php::error::Result::Ok(obj)
             }
         }
 
-        impl #into_impl_generics ::ext_php_rs::convert::IntoZval for #ident #ty_generics #into_where_clause {
-            const TYPE: ::ext_php_rs::flags::DataType = ::ext_php_rs::flags::DataType::Object(None);
+        impl #into_impl_generics ::awl::ms::php::convert::IntoZval for #ident #ty_generics #into_where_clause {
+            const TYPE: ::awl::ms::php::flags::DataType = ::awl::ms::php::flags::DataType::Object(None);
 
-            fn set_zval(self, zv: &mut ::ext_php_rs::types::Zval, persistent: bool) -> ::ext_php_rs::error::Result<()> {
-                use ::ext_php_rs::convert::{IntoZval, IntoZendObject};
+            fn set_zval(self, zv: &mut ::awl::ms::php::types::Zval, persistent: bool) -> ::awl::ms::php::error::Result<()> {
+                use ::awl::ms::php::convert::{IntoZval, IntoZendObject};
 
                 self.into_zend_object()?.set_zval(zv, persistent)
             }
         }
 
-        impl #from_impl_generics ::ext_php_rs::convert::FromZendObject<'_zval> for #ident #ty_generics #from_where_clause {
-            fn from_zend_object(obj: &'_zval ::ext_php_rs::types::ZendObject) -> ::ext_php_rs::error::Result<Self> {
-                ::ext_php_rs::error::Result::Ok(Self {
+        impl #from_impl_generics ::awl::ms::php::convert::FromZendObject<'_zval> for #ident #ty_generics #from_where_clause {
+            fn from_zend_object(obj: &'_zval ::awl::ms::php::types::ZendObject) -> ::awl::ms::php::error::Result<Self> {
+                ::awl::ms::php::error::Result::Ok(Self {
                     #(#from_fields)*
                 })
             }
         }
 
-        impl #from_impl_generics ::ext_php_rs::convert::FromZval<'_zval> for #ident #ty_generics #from_where_clause {
-            const TYPE: ::ext_php_rs::flags::DataType = ::ext_php_rs::flags::DataType::Object(None);
+        impl #from_impl_generics ::awl::ms::php::convert::FromZval<'_zval> for #ident #ty_generics #from_where_clause {
+            const TYPE: ::awl::ms::php::flags::DataType = ::awl::ms::php::flags::DataType::Object(None);
 
-            fn from_zval(zv: &'_zval ::ext_php_rs::types::Zval) -> ::std::option::Option<Self> {
-                use ::ext_php_rs::convert::FromZendObject;
+            fn from_zval(zv: &'_zval ::awl::ms::php::types::Zval) -> ::std::option::Option<Self> {
+                use ::awl::ms::php::convert::FromZendObject;
 
                 Self::from_zend_object(zv.object()?).ok()
             }
@@ -230,30 +230,30 @@ fn parse_enum(
     let default = default.unwrap_or_else(|| quote! { None });
 
     Ok(quote! {
-        impl #into_impl_generics ::ext_php_rs::convert::IntoZval for #ident #ty_generics #into_where_clause {
-            const TYPE: ::ext_php_rs::flags::DataType = ::ext_php_rs::flags::DataType::Mixed;
+        impl #into_impl_generics ::awl::ms::php::convert::IntoZval for #ident #ty_generics #into_where_clause {
+            const TYPE: ::awl::ms::php::flags::DataType = ::awl::ms::php::flags::DataType::Mixed;
 
             fn set_zval(
                 self,
-                zv: &mut ::ext_php_rs::types::Zval,
+                zv: &mut ::awl::ms::php::types::Zval,
                 persistent: bool,
-            ) -> ::ext_php_rs::error::Result<()> {
-                use ::ext_php_rs::convert::IntoZval;
+            ) -> ::awl::ms::php::error::Result<()> {
+                use ::awl::ms::php::convert::IntoZval;
 
                 match self {
                     #(#into_variants,)*
                     _ => {
                         zv.set_null();
-                        ::ext_php_rs::error::Result::Ok(())
+                        ::awl::ms::php::error::Result::Ok(())
                     }
                 }
             }
         }
 
-        impl #from_impl_generics ::ext_php_rs::convert::FromZval<'_zval> for #ident #ty_generics #from_where_clause {
-            const TYPE: ::ext_php_rs::flags::DataType = ::ext_php_rs::flags::DataType::Mixed;
+        impl #from_impl_generics ::awl::ms::php::convert::FromZval<'_zval> for #ident #ty_generics #from_where_clause {
+            const TYPE: ::awl::ms::php::flags::DataType = ::awl::ms::php::flags::DataType::Mixed;
 
-            fn from_zval(zval: &'_zval ::ext_php_rs::types::Zval) -> ::std::option::Option<Self> {
+            fn from_zval(zval: &'_zval ::awl::ms::php::types::Zval) -> ::std::option::Option<Self> {
                 #(#from_variants)*
                 #default
             }
