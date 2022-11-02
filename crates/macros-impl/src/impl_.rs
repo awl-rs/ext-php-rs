@@ -101,8 +101,9 @@ pub enum PropAttrTy {
 }
 
 pub fn parser(args: AttributeArgs, input: ItemImpl) -> Result<TokenStream> {
-    let args = AttrArgs::from_list(&args)
-        .map_err(|e| anyhow!("Unable to parse attribute arguments: {:?}", e))?;
+    println!("parsing impl_");
+    let args = dbg!(AttrArgs::from_list(&args)
+        .map_err(|e| anyhow!("Unable to parse attribute arguments: {:?}", e))?);
 
     let ItemImpl { self_ty, items, .. } = input;
     let class_name = self_ty.to_token_stream().to_string();
