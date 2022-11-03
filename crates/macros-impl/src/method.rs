@@ -1,7 +1,7 @@
 use anyhow::{anyhow, bail, Result};
 use quote::ToTokens;
 use std::collections::HashMap;
-use syn::ReturnType;
+use syn::{Meta, NestedMeta, ReturnType};
 
 use crate::helpers::get_docs;
 use crate::{
@@ -88,8 +88,8 @@ pub fn parser(
     let docs = get_docs(&input.attrs);
 
     println!("attrs: {:?}", input.attrs);
-    for attr in input.attrs.iter() {
-        if let Some(attr) = parse_attribute(attr)? {
+    for raw_attr in input.attrs.iter() {
+        if let Some(attr) = parse_attribute(raw_attr)? {
             match attr {
                 ParsedAttribute::Default(list) => defaults = list,
                 ParsedAttribute::Optional(name) => optional = Some(name),
@@ -116,7 +116,21 @@ pub fn parser(
                     as_prop = Some((prop_name, ty))
                 }
                 ParsedAttribute::Constructor => is_constructor = true,
-                _ => bail!("Invalid attribute for method."),
+                _ => {
+                    if let Ok(Meta::List(ml)) = raw_attr.parse_meta() {
+                        if ml.path.segments[0].ident == "awl" {
+                            for n in ml.nested {
+                                if let NestedMeta::Meta(m) = n {
+                                    if m.path().is_ident("constructor") {
+                                        is_constructor = true;
+                                        continue;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    bail!("Invalid attribute for method.")
+                }
             }
         }
     }
