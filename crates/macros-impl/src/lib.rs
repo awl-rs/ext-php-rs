@@ -9,7 +9,7 @@ mod method;
 pub mod module;
 mod startup_function;
 mod syn_ext;
-mod zval;
+pub mod zval;
 
 use std::{
     collections::HashMap,

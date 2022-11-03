@@ -84,6 +84,7 @@ pub fn parser(
     let mut identifier = None;
     let mut is_abstract = false;
     let mut is_constructor = false;
+    // eas: check for awl(constructor)
     let docs = get_docs(&input.attrs);
 
     for attr in input.attrs.iter() {
