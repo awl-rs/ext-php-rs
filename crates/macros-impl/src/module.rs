@@ -103,7 +103,6 @@ pub fn parser_with_opt_namespace(input: ItemFn, namespace: Option<Path>) -> Resu
 
 /// Generates an implementation for `RegisteredClass` on the given class.
 pub fn generate_registered_class_impl(class: &Class) -> Result<TokenStream> {
-    let self_ty = Ident::new(&class.struct_path, Span::call_site());
     let self_path: Path = parse_str(&class.self_path)?;
     let class_name = &class.class_name;
     let meta = Ident::new(&format!("_{}_META", &class.struct_path), Span::call_site());

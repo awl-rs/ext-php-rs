@@ -119,6 +119,7 @@ pub fn parser(args: AttributeArgs, input: ItemImpl) -> Result<TokenStream> {
             "Impls must be declared before you declare your startup function and module function."
         );
     }
+    println!("classes: {:?}", state.classes);
 
     let class = state.classes.get_mut(&class_name).ok_or_else(|| {
         anyhow!(

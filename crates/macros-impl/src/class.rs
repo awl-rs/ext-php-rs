@@ -55,8 +55,9 @@ pub fn parser(args: AttributeArgs, mut input: ItemStruct) -> Result<TokenStream>
     let mut interfaces = vec![];
     let mut properties = HashMap::new();
     let mut comments = vec![];
-    let mut namespace = None;
 
+    println!("attrs: {:?}", input.attrs);
+    println!("args: {args:?}");
     input.attrs = {
         let mut unused = vec![];
         for attr in input.attrs.into_iter() {
@@ -70,9 +71,6 @@ pub fn parser(args: AttributeArgs, mut input: ItemStruct) -> Result<TokenStream>
                     }
                     ParsedAttribute::Comment(comment) => {
                         comments.push(comment);
-                    }
-                    ParsedAttribute::Namespace(ns) => {
-                        namespace.replace(ns);
                     }
                     attr => bail!("Attribute `{:?}` is not valid for structs.", attr),
                 },
@@ -128,7 +126,7 @@ pub fn parser(args: AttributeArgs, mut input: ItemStruct) -> Result<TokenStream>
 
     let ItemStruct { ident, .. } = &input;
     let class_name = args.name.unwrap_or_else(|| ident.to_string());
-    let self_path = if let Some(ns) = namespace {
+    let self_path = if let Some(ns) = args.namespace {
         format!("{ns}::{ident}")
     } else {
         ident.to_string()
@@ -137,7 +135,7 @@ pub fn parser(args: AttributeArgs, mut input: ItemStruct) -> Result<TokenStream>
     let flags = args.flags.map(|flags| flags.to_token_stream().to_string());
     let class = Class {
         class_name,
-        self_path,
+        self_path: self_path.clone(),
         struct_path,
         parent,
         interfaces,
@@ -158,7 +156,7 @@ pub fn parser(args: AttributeArgs, mut input: ItemStruct) -> Result<TokenStream>
         bail!("The `#[php_startup]` macro must be called after all the classes have been defined.");
     }
 
-    state.classes.insert(ident.to_string(), class);
+    state.classes.insert(self_path.to_string(), class);
 
     Ok(quote! {
         #input
