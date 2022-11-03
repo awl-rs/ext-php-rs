@@ -18,6 +18,7 @@ pub struct AttrArgs {
     ignore_module: bool,
     defaults: HashMap<String, Lit>,
     name: Option<String>,
+    namespace: Option<String>,
 }
 
 #[derive(Debug, Clone)]
