@@ -104,6 +104,7 @@ pub fn parser_with_opt_namespace(input: ItemFn, namespace: Option<Path>) -> Resu
 /// Generates an implementation for `RegisteredClass` on the given class.
 pub fn generate_registered_class_impl(class: &Class) -> Result<TokenStream> {
     let self_ty = Ident::new(&class.struct_path, Span::call_site());
+    let self_path = class.self_path.clone();
     let class_name = &class.class_name;
     let meta = Ident::new(&format!("_{}_META", &class.struct_path), Span::call_site());
     let prop_tuples = class
@@ -131,9 +132,9 @@ pub fn generate_registered_class_impl(class: &Class) -> Result<TokenStream> {
     };
 
     Ok(quote! {
-        static #meta: ::awl::ms::php::class::ClassMetadata<#self_ty> = ::awl::ms::php::class::ClassMetadata::new();
+        static #meta: ::awl::ms::php::class::ClassMetadata<#self_path> = ::awl::ms::php::class::ClassMetadata::new();
 
-        impl ::awl::ms::php::class::RegisteredClass for #self_ty {
+        impl ::awl::ms::php::class::RegisteredClass for #self_path {
             const CLASS_NAME: &'static str = #class_name;
             const CONSTRUCTOR: ::std::option::Option<
                 ::awl::ms::php::class::ConstructorMeta<Self>

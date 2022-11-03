@@ -6,12 +6,16 @@ use darling::{FromMeta, ToTokens};
 use proc_macro2::{Ident, Span, TokenStream};
 use quote::quote;
 use syn::parse::ParseStream;
-use syn::{Attribute, AttributeArgs, Expr, Fields, FieldsNamed, ItemStruct, LitStr, Token};
+use syn::{
+    parse_quote, Attribute, AttributeArgs, Expr, Fields, FieldsNamed, ItemStruct, LitStr, Meta,
+    NestedMeta, Path, Token,
+};
 
 #[derive(Debug, Default)]
 pub struct Class {
     pub class_name: String,
     pub struct_path: String,
+    pub self_path: String,
     pub parent: Option<String>,
     pub interfaces: Vec<String>,
     pub docs: Vec<String>,
@@ -31,6 +35,7 @@ pub enum ParsedAttribute {
     Implements(Expr),
     Property(PropertyAttr),
     Comment(String),
+    Namespace(String),
 }
 
 #[derive(Default, Debug, FromMeta)]
@@ -49,6 +54,7 @@ pub fn parser(args: AttributeArgs, mut input: ItemStruct) -> Result<TokenStream>
     let mut interfaces = vec![];
     let mut properties = HashMap::new();
     let mut comments = vec![];
+    let mut namespace = None;
 
     input.attrs = {
         let mut unused = vec![];
@@ -63,6 +69,9 @@ pub fn parser(args: AttributeArgs, mut input: ItemStruct) -> Result<TokenStream>
                     }
                     ParsedAttribute::Comment(comment) => {
                         comments.push(comment);
+                    }
+                    ParsedAttribute::Namespace(ns) => {
+                        namespace.replace(ns);
                     }
                     attr => bail!("Attribute `{:?}` is not valid for structs.", attr),
                 },
@@ -118,10 +127,16 @@ pub fn parser(args: AttributeArgs, mut input: ItemStruct) -> Result<TokenStream>
 
     let ItemStruct { ident, .. } = &input;
     let class_name = args.name.unwrap_or_else(|| ident.to_string());
+    let self_path = if let Some(ns) = namespace {
+        format!("{ns}::{ident}")
+    } else {
+        ident.to_string()
+    };
     let struct_path = ident.to_string();
     let flags = args.flags.map(|flags| flags.to_token_stream().to_string());
     let class = Class {
         class_name,
+        self_path,
         struct_path,
         parent,
         interfaces,
@@ -285,6 +300,7 @@ impl syn::parse::Parse for PropertyAttr {
 
 pub fn parse_attribute(attr: &Attribute) -> Result<Option<ParsedAttribute>> {
     let name = attr.path.to_token_stream().to_string();
+    let meta = attr.parse_meta()?;
 
     Ok(match name.as_ref() {
         "extends" => {
@@ -323,6 +339,18 @@ pub fn parse_attribute(attr: &Attribute) -> Result<Option<ParsedAttribute>> {
             };
 
             Some(ParsedAttribute::Property(attr))
+        }
+        "namespace" => {
+            let ident = if let Meta::List(list) = meta {
+                if let Some(NestedMeta::Lit(lit)) = list.nested.first() {
+                    String::from_value(lit).ok()
+                } else {
+                    None
+                }
+            } else {
+                None
+            };
+            ident.map(ParsedAttribute::Namespace)
         }
         _ => None,
     })
