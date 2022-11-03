@@ -64,7 +64,7 @@ pub fn parser_with_opt_namespace(input: ItemFn, namespace: Option<Path>) -> Resu
         .values()
         .map(generate_registered_class_impl)
         .collect::<Result<Vec<_>>>()?;
-    let describe_fn = generate_stubs(&state);
+    let describe_fn = generate_stubs(&state, namespace.clone());
 
     let result = quote! {
         #(#registered_classes_impls)*
@@ -158,13 +158,15 @@ pub trait Describe {
     fn describe(&self) -> TokenStream;
 }
 
-fn generate_stubs(state: &MutexGuard<State>) -> TokenStream {
+fn generate_stubs(state: &MutexGuard<State>, namespace: Option<Path>) -> TokenStream {
     let module = state.describe();
+    let use_item = quote! { use #namespace::*; };
 
     quote! {
         #[cfg(debug_assertions)]
         #[no_mangle]
         pub extern "C" fn ext_php_rs_describe_module() -> ::awl::ms::php::describe::Description {
+            #use_item
             use ::awl::ms::php::describe::*;
 
             Description::new(#module)
