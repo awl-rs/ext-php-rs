@@ -44,6 +44,7 @@ pub struct AttrArgs {
     name: Option<String>,
     modifier: Option<String>,
     flags: Option<Expr>,
+    namespace: Option<String>,
 }
 
 pub fn parser(args: AttributeArgs, mut input: ItemStruct) -> Result<TokenStream> {
