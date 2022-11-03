@@ -3,7 +3,7 @@ use std::sync::MutexGuard;
 use anyhow::{anyhow, bail, Result};
 use proc_macro2::{Ident, Span, TokenStream};
 use quote::quote;
-use syn::{ItemFn, Path, Signature, Type};
+use syn::{parse_quote, ItemFn, Path, Signature, Type};
 
 use crate::{
     class::{Class, Property},
@@ -104,7 +104,8 @@ pub fn parser_with_opt_namespace(input: ItemFn, namespace: Option<Path>) -> Resu
 /// Generates an implementation for `RegisteredClass` on the given class.
 pub fn generate_registered_class_impl(class: &Class) -> Result<TokenStream> {
     let self_ty = Ident::new(&class.struct_path, Span::call_site());
-    let self_path = class.self_path.clone();
+    let sp = &class.self_path;
+    let self_path: Path = parse_quote!(#sp);
     let class_name = &class.class_name;
     let meta = Ident::new(&format!("_{}_META", &class.struct_path), Span::call_site());
     let prop_tuples = class
