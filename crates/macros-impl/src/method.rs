@@ -87,6 +87,7 @@ pub fn parser(
     // eas: check for awl(constructor)
     let docs = get_docs(&input.attrs);
 
+    println!("attrs: {:?}", input.attrs);
     for attr in input.attrs.iter() {
         if let Some(attr) = parse_attribute(attr)? {
             match attr {
