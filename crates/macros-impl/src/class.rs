@@ -135,7 +135,7 @@ pub fn parser(args: AttributeArgs, mut input: ItemStruct) -> Result<TokenStream>
     let flags = args.flags.map(|flags| flags.to_token_stream().to_string());
     let class = Class {
         class_name,
-        self_path: self_path.clone(),
+        self_path,
         struct_path,
         parent,
         interfaces,
@@ -156,7 +156,7 @@ pub fn parser(args: AttributeArgs, mut input: ItemStruct) -> Result<TokenStream>
         bail!("The `#[php_startup]` macro must be called after all the classes have been defined.");
     }
 
-    state.classes.insert(self_path.to_string(), class);
+    state.classes.insert(ident.to_string(), class);
 
     Ok(quote! {
         #input
