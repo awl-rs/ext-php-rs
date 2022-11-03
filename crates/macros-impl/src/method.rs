@@ -117,19 +117,20 @@ pub fn parser(
                 }
                 ParsedAttribute::Constructor => is_constructor = true,
                 _ => {
-                    if let Ok(Meta::List(ml)) = raw_attr.parse_meta() {
-                        if ml.path.segments[0].ident == "awl" {
-                            for n in ml.nested {
-                                if let NestedMeta::Meta(m) = n {
-                                    if m.path().is_ident("constructor") {
-                                        is_constructor = true;
-                                        continue;
-                                    }
-                                }
+                    bail!("Invalid attribute for method.")
+                }
+            }
+        } else {
+            if let Ok(Meta::List(ml)) = raw_attr.parse_meta() {
+                if ml.path.segments[0].ident == "awl" {
+                    for n in ml.nested {
+                        if let NestedMeta::Meta(m) = n {
+                            if m.path().is_ident("constructor") {
+                                is_constructor = true;
+                                continue;
                             }
                         }
                     }
-                    bail!("Invalid attribute for method.")
                 }
             }
         }
