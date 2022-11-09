@@ -56,8 +56,6 @@ pub fn parser(args: AttributeArgs, mut input: ItemStruct) -> Result<TokenStream>
     let mut properties = HashMap::new();
     let mut comments = vec![];
 
-    println!("attrs: {:?}", input.attrs);
-    println!("args: {args:?}");
     input.attrs = {
         let mut unused = vec![];
         for attr in input.attrs.into_iter() {
