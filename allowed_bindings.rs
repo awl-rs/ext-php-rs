@@ -217,7 +217,6 @@ bind! {
     executor_globals,
     php_printf,
     __zend_malloc,
-    ___zend_malloc,
     tsrm_get_ls_cache,
     executor_globals_offset
 }
