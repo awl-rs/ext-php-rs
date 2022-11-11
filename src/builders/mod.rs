@@ -2,6 +2,7 @@
 //! Generally zero-cost abstractions.
 
 mod class;
+mod r#enum;
 mod function;
 mod module;
 

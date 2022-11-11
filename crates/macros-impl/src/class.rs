@@ -7,8 +7,8 @@ use proc_macro2::{Ident, Span, TokenStream};
 use quote::quote;
 use syn::parse::ParseStream;
 use syn::{
-    parse_quote, Attribute, AttributeArgs, Expr, Fields, FieldsNamed, ItemStruct, LitStr, Meta,
-    NestedMeta, Path, Token,
+    Attribute, AttributeArgs, Expr, Fields, FieldsNamed, ItemStruct, LitStr, Meta, NestedMeta,
+    Token,
 };
 
 #[derive(Debug, Default)]

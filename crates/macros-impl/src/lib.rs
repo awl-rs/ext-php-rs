@@ -48,6 +48,10 @@ impl StateMutex {
     }
 }
 
+pub fn register_class(name: String, cls: class::Class) {
+    STATE.lock().classes.insert(name, cls);
+}
+
 pub fn php_class(args: TokenStream, input: TokenStream) -> TokenStream {
     let parser = Punctuated::<NestedMeta, Token![,]>::parse_terminated;
     let args: AttributeArgs = parser.parse2(args).unwrap().into_iter().collect();

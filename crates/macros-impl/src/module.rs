@@ -3,7 +3,7 @@ use std::sync::MutexGuard;
 use anyhow::{anyhow, bail, Result};
 use proc_macro2::{Ident, Span, TokenStream};
 use quote::quote;
-use syn::{parse_quote, parse_str, ItemFn, Path, Signature, Type};
+use syn::{parse_str, ItemFn, Path, Signature, Type};
 
 use crate::{
     class::{Class, Property},
