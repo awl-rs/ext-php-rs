@@ -225,7 +225,7 @@ bind! {
     ZEND_ACC_NOT_SERIALIZABLE,
     executor_globals,
     php_printf,
-    __zend_malloc,
+    _zend_malloc,
     tsrm_get_ls_cache,
     executor_globals_offset
 }
