@@ -110,6 +110,7 @@ pub fn parser_with_opt_namespace(input: ItemFn, namespace: Option<Path>) -> Resu
 pub fn generate_registered_class_impl(class: &Class) -> Result<TokenStream> {
     let self_path: Path = parse_str(&class.self_path)?;
     let class_name = &class.class_name;
+    eprintln!("attempting to gen for {}", class_name);
     let meta = Ident::new(&format!("_{}_META", &class.struct_path), Span::call_site());
     let prop_tuples = class
         .properties
@@ -134,8 +135,9 @@ pub fn generate_registered_class_impl(class: &Class) -> Result<TokenStream> {
     } else {
         quote! { None }
     };
+    eprintln!("constructor created");
 
-    Ok(quote! {
+    dbg!(Ok(quote! {
         static #meta: ::awl::ms::php::class::ClassMetadata<#self_path> = ::awl::ms::php::class::ClassMetadata::new();
 
         impl ::awl::ms::php::class::RegisteredClass for #self_path {
@@ -156,7 +158,7 @@ pub fn generate_registered_class_impl(class: &Class) -> Result<TokenStream> {
                 ])
             }
         }
-    })
+    }))
 }
 
 pub trait Describe {
