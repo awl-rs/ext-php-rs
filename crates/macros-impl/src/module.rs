@@ -47,6 +47,7 @@ pub fn parser_with_opt_namespace(input: ItemFn, namespace: Option<Path>) -> Resu
     } else {
         None
     };
+    eprintln!("made startup fn");
 
     let functions = state
         .functions
@@ -59,6 +60,7 @@ pub fn parser_with_opt_namespace(input: ItemFn, namespace: Option<Path>) -> Resu
             .startup_function(#ident)
         }
     });
+    eprintln!("making registered classes");
     let registered_classes_impls = state
         .classes
         .values()
