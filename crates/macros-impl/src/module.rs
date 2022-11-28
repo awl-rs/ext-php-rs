@@ -66,7 +66,10 @@ pub fn parser_with_opt_namespace(input: ItemFn, namespace: Option<Path>) -> Resu
         .values()
         .map(generate_registered_class_impl)
         .collect::<Result<Vec<_>>>()?;
+    eprintln!("done registering classes");
     let describe_fn = generate_stubs(&state, namespace.clone());
+
+    eprintln!("done stubbing");
 
     let result = quote! {
         #(#registered_classes_impls)*
